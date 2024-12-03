@@ -28,3 +28,92 @@ OOP languages make it possible to create direct mappings between the model objec
 Procedural languages offer limited support for model-driven design, such languages do not offer the constructs necessary to implement key components of a model, some say that OOP can be done with a procedural language like C, and indeed, some of the functionality can be reproduced that way, objects can be simulated as data structures, but such a program can not easily encapsulate the conceptual connections, making mapping between domain and code difficult to realize
 
 Overall, procedural programming is not recommended for model-driven design
+
+## Building Blocks of a Model Driven Design
+The following sections of this chapter will present the most important patterns to be used in model-driven design, the purpose of these patterns is to present some of the key elements of object modeling and software design from the viewpoint of domain-driven design
+
+The following diagram is a map of the patterns presented and the relationships between them
+
+![Domain-Driven Design Diagram](photos/relationships_between_key_elements.png)
+This is a bit hard to understand, so let's break this diagram down!
+
+1. Model-Driven Design
+The central concept in Domain-Driven Design is that software is built around a model model, you can either build your system with model driven design or use simpler approaches such as Smart UI this is *mutually exclusive*
+
+2. Entities: Objects defined by their identity, not just their attributes, they represent key domain concepts are are identified by a unique identifier
+
+Example: A custoemr in a system has a unique ID that distinguishes them from other customers, this is an entity
+
+Relationships:
+- Aggregates: Entities often act as the root of aggregate, grouping related entities and value objects into a single consistency boundary
+- Repositories: Entities are accessed and managed through their repositories, which handle storing and retrieving them
+- Services: Certain domain logic that does not naturally fit into entities or value objects can be expressed through services
+
+3. Value Objects: Value objects are immutable and defined by their attributes rather than identity, they don't have a unique identity and are interchangeable if their attributes are the same
+
+Example: An amount of money is a value object, $10 is the same as another $10, these don't need to be kept track of uniquely
+
+Relationships:
+- Entities: Entities can contain or use value objects as part of their data
+- Aggregates: Value objects are often part of aggregates, providing additional context or details
+- Factories: Factories might create value objects, especially if their creation is complex
+
+4. Aggregates: A cluster of related objects (entities and value objects) that are treated as a single unit for data changes, each aggregate has a root entity that controls access to the other objects within the cluster
+
+Example: An order might include items (entities or value objects) and shipping details, when you update an order, you interact with the order aggregate, ensuring all related changes are consistent
+
+Relationships:
+- Entities: The aggregate root is an entity that manages the entire aggregate
+- Repositories: Aggregates are accessed through repositories, ,which ensure that only the aggregate root is directly handled
+- Value Objects & Factories: They ensure that the aggregate remains consistent and valid
+
+5. Repository: Collections that provide methods for storing and retrieving entities or aggregates, they abstract the data storage details, allowing the domain model to remain focused on business logic
+
+Example: The customer repository may have methods such as `addCustomer(Customer customer)` or `findCustomerById(String id)`
+
+Relationships:
+- Entities and Aggregates: Repositories handle the persistence and retrieval of entities and aggregates
+
+*For some clarficiation these are not code repositories or databases, they are an abstraction that provides an interface for storing and retrieving domain objects*
+
+6. Factories: Factories are responsible for creating complex objects (entities or value objects), they encapsulate the creation logic, ensuring that objects are properly constructed without burdening the domain model
+
+Example: OrderFactory might handle the creation of an order along with its initial order items, ensuring all necessary data is correctly set up
+
+Relationshups: Entities, Objects, Aggregates are created by factories, especially when their creation involves multiple steps or rules
+
+7. Services: Contains domain logic that doesn't naturally fit within entities or value objects, they perform operations or calculations that are part of the domain
+
+Example: PaymentService: This might handle processing payments, a task that involves multiple entities and doesn't belong to any single one
+
+Relationships:
+- Entities, Value Objects, Aggregates: Services interact with these to perform their operations, often coordinating multiple parts of the domain model
+
+8. Layered Architecture: A layered architecture divides the system into different layers, each with a specific responsibility, common layers include:
+- Domain layer: Contains the domain model
+- Application layer: Coordinates the application activities
+- Infrastructure layer: Deals with technical details like databases, messaging, and external services
+
+## Putting It All Together
+Imagine you're building an online bookstore, here's how these DDD components may interact with each other
+- Domain Model: The bookstore's business logic, including customers, books, orders, payments, etc
+- Entities:
+    - Customer: Identified by a unique customer ID
+    - Order: Identified by a unique order ID
+    - Book: Identified by a unique book ID
+- Value Objects:
+    - Money: The prices and payment amounts
+    - Address: A customer's shipping address
+- Aggregates:
+    - Order Aggregate: Includes the order itself (aggregate root), order item, and shipping details
+- Repositories:
+    - OrderRepository: Handles storing and retrieving orders
+    - Customer Repository: Manages customer entities
+- Factories:
+    - OrderFactory: Creates new orders with initial items and shipping details
+- Services:
+    - PaymentService: Processes payments when a customer places an order
+- Layered Architecture:
+    - Domain Layer: Contains all the above domain elements such as entities and domain services
+    - Application Layer: Managees the process of placing an order, managing customers
+    - Infrastructure: Interfaces with the database to store orders and customers
