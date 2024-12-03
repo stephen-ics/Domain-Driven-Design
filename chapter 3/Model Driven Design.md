@@ -141,3 +141,26 @@ If the code is not clearly separated it will soon become entangled and becomes v
 The domain layer should be involved on core domain issues, it should nto be involved in infrastructure activities, the UI should neither be tightly connected to the business logic nor to the tasks which normally belong to the infrastructure layer
 
 For example: A user wants to book a flights route, and asks an application service in an application layer to do so, the application tier fetches the relevant domain objects from the infrastructure and invokes relevant methods on them, once the domain objects have made all checks and updated their status, the application service persists the object to the infrastructure
+
+## Modules
+For a large and complex application, the model tends to grow bigger and bigger, the model reaches a point where it is hard to talk about as a whole, and understanding the relationships and interactions between different parts becomes difficult
+
+For that reason, it is necessary to organize the model in modules, modules are used as a method of organizing related concepts and tasks in order to reduce complexity
+
+Modules are widely used in most projects, it is easier to get the picture of a large model if you look at the modules it contains, then at the relationships between those modules, after the interaction between modules is understood, one can start figuring out the details inside of a module
+
+It's a simple and efficient way to manage complexity!
+
+It is widely accepted that software code should have a high level of cohesion and a low level of coupling, while cohesion starts at the class and method level, it can be applied at the module level
+
+***Cohesion**: A measure of how closely related and focused the responsibilities of a single module, class, or function are*
+
+
+Two of the most used are *communicational cohesion* and *functional cohesion*, communicational cohesion is achieved when parts of the module operate on the same data, it makes sense to group them because there is a strong relationship between them
+
+The functional cohesion is achieved whel all parts of the module work together to perform a well-defined task, this is considered the best type of cohesion
+
+Using modules in design is a way to increase cohesion and decrease coupling, moodules should be made up of elements which functionality or logically belong together, assuring cohesion
+
+Choose modules that tell the story of the system and contain a cohesive set of concepts, give the modules names that become part of the ubiquitous language, modules and their names should reflect insight into the domain
+
