@@ -123,3 +123,41 @@ A Conformist relationship occurs when one bounded context adopts the model and t
 
 Key Relationships
 - Context Map: The Context Map indicates a conformist relationship where one context unilaterally adopts another's model
+
+### Bringing it All Together
+Say we have an Online Education Platform to illustrate how all these components interact
+
+First we can define our bounded contexts:
+1. User Management
+2. Course Catalog
+3. Enrollment
+4. Billing
+5. Content Delivery
+6. Support
+
+Relationships and COntext Map:
+1. User Management and Enrollment
+    - Shared Kernel: UserId, UserName
+    - Relationship: Customer/Supplier where Enrollment consumes user data
+2. Enrollment and Billing:
+    - Anticorruption Layer: Enrollment uses ACL to communicate with Billing, translating enrollment data into billing terms
+3. Course Catalog and Content Delivery
+    - Open Host Service: Course Catalog provides APIs that Content Delivery uses to fetch course materials
+    - Published Language: Defines how course data is structured in the API
+4. Support and User Management
+    - Conformist: Support adopts the User Management's `User` model directly to access user details
+5. Separate Ways
+    - Support does not interact with Course Catalog directly
+
+
+### State vs Context
+State refers to the current condition or status of something at a specific time, in software it's the data that represents what the system is doing at this moment
+
+Context represents the overall environment of the software application, this can include the server, database connections, user sessions, and APIs, in DDD a domain context (aka bounded context) defines a specific area of the software with its own models, rules, and languages
+
+### Conclusion
+- Bounded Contexts define clear boundaries for different parts of the system
+- Context Maps visualize how contexts interact using patterns such as ACL, OHS, and Shared Kernels
+- Continuous Integration maintains model consistency within each context
+- Customer/Supplier and Conformist relationships define how contexts depend on or adopt each others models
+- Separate Ways allow certain contexts to remaine indepdent, reducing the complexity
