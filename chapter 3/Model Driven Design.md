@@ -89,10 +89,7 @@ Example: PaymentService: This might handle processing payments, a task that invo
 Relationships:
 - Entities, Value Objects, Aggregates: Services interact with these to perform their operations, often coordinating multiple parts of the domain model
 
-8. Layered Architecture: A layered architecture divides the system into different layers, each with a specific responsibility, common layers include:
-- Domain layer: Contains the domain model
-- Application layer: Coordinates the application activities
-- Infrastructure layer: Deals with technical details like databases, messaging, and external services
+8. Layered Architecture: A layered architecture divides the system into different layers, each with a specific responsibility
 
 ## Putting It All Together
 Imagine you're building an online bookstore, here's how these DDD components may interact with each other
@@ -113,7 +110,34 @@ Imagine you're building an online bookstore, here's how these DDD components may
     - OrderFactory: Creates new orders with initial items and shipping details
 - Services:
     - PaymentService: Processes payments when a customer places an order
-- Layered Architecture:
-    - Domain Layer: Contains all the above domain elements such as entities and domain services
-    - Application Layer: Managees the process of placing an order, managing customers
-    - Infrastructure: Interfaces with the database to store orders and customers
+
+## Layered Architecture
+![Layered Architecture](photos/layered_architecture.png)
+*This figure depicts a typical architecture*
+
+When we create a software application, a large part of the application is not directly related to the domain, but it is part of the infrastructure or serves the software itself
+
+It is possible and okay for the domain part of an application to be quite small, compared to the rest, since a typical application contains a lot of code related to database access, file or network access, user interfaces, etc
+
+In an object-oriented program, UI, database, and other support code often gets written directly into the business objects, additionally business logic is embedded in the behaviour of UI widgets and database scripts
+
+However, when domain-related code is mixed with the other layers, it becomes extremely difficult to see and think about, superficial changes to the UI can actually change business logic, and to change a business rule may require meticulous tracing of UI code, database code, and other program elements
+
+Therefore, partition a complex program into LAYERS, develop a design within each layer that is cohesive and that depends ONLY on the layers below, follow standard architectural patterns to provide loose coupling to the layer and isolate it from the user interface, application, and infrastructure code
+
+A common architectural solution for domain-driven design contain four conceptual layers:
+1. User Inteface (Presentation Layer): Responsible for presenting to the user and interpreting user commands
+2. Application Layer: This is a thin layer which coordinates the application activity, it does not contain business logic it, it does not hold the state of business objects, but it can hold the state of an appliction task progressive
+3. Domain Layer: This layer contains information about the domain, this is the heart of the business software, the state of business objects is held here, persistence of the business objects and possibly their state is delegated to the infrastructure layer
+
+**Persistence**: Refers to the process of saving data so that it can be retrieved and used later, even after the application or system shuts down
+
+4. Infrastructure Layer: The layer acts as a supporting library for all the other layers, it provides communication between layers, implements persistence for business objects and contains supporting libraries for the UI layer
+
+It is important to divide an application in separate layers and establish rules of interactions between the layers
+
+If the code is not clearly separated it will soon become entangled and becomes very difficult to manage
+
+The domain layer should be involved on core domain issues, it should nto be involved in infrastructure activities, the UI should neither be tightly connected to the business logic nor to the tasks which normally belong to the infrastructure layer
+
+For example: A user wants to book a flights route, and asks an application service in an application layer to do so, the application tier fetches the relevant domain objects from the infrastructure and invokes relevant methods on them, once the domain objects have made all checks and updated their status, the application service persists the object to the infrastructure
