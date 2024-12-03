@@ -36,3 +36,41 @@ The first way to discover implicit concepts is to listen to the language, the la
 As we build our Ubiquitous Language, the key concepts make their way into it, this is where we look for implicit concepts
 
 Sometimes sections of the design may not be so clear, there is a set of relationships that makes the path of computation hard to follow, or the procedures are doing something complicated which is hard to understand, this awkwardness in the deisgn is a good place to look for hidden concepts, if one is found, make it explicit, refactor the design to make it simpler and suppler
+
+### Specification
+The last method to make concepts explicit is Specification
+
+Specification is used to test an object to see if it satisfies a certain criteria, the domain layer contains business rules which are applied to Entities and Value Objects
+
+Those rules are usually incorporated into the objects they apply to, some of these rules are just a set of questions whose answer is "yes" or "no", such rules can be expressed through a series of logical operations performed oin Boolean values, and the final result is also a Boolean
+
+One such example is the test performed on a Customer object to see if it is eligible for a certain credit, the rule can be expressed as a method, named `isEligible()`, and can be attached to the Customer object
+
+But this rule is not a simple method which operates strictly on Customer data, evalating the rule involves verifiying the customer's credentials, checking to see if he paid his debts in the past, checking to see if he has any outstanding balances, etc
+
+Such business rules can be large and complex, bloating the object to the point that it no longer serves its original purpose, at this point we might be tempted to move the entire rule to the application level, because it seems that it stretches beyond the domain level, but actually it is time for refactoring
+
+The rule should be encapsulated into an object of its own, which becomes the Specification of the Customer, and should be kept in the domain layer
+
+The new object will contain a series of Boolean methods which test if a certain Customer object is eligible for credit or not
+
+Each method plays the role of a small test, and all methods combined give the answer to the original question, if the business rule is not comprised in one Specification object, the corresponding code will end up being spread over a number of objects, making it inconsistent
+
+The Specification is used to test objects to see if they fulfill some need, or if they are ready for some purpose, it can also be used to select a certain object from a collection, or as a condition during the creation of an object
+
+Often a single Specification checks if a simple rule is satisfied, and then a number of such specifications are combined itno a composite one expressing the complex rule as such:
+
+```java
+Customer customer =
+customerRepository.findCustomer(customerIdentiy);
+…
+Specification customerEligibleForRefund = new
+Specification(
+    new CustomerPaidHisDebtsInThePast(),
+    new CustomerHasNoOutstandingBalances());
+if(customerEligibleForRefund.isSatisfiedBy(customer)
+{
+    refundService.issueRefundTo(customer);
+} 
+```
+Testing simple rules is simpler, and just from reading this code it is obvious what it means that a customer is eligible for a refund
