@@ -82,6 +82,15 @@ Key Relationships:
 
 Example: Suppose there is a legacy system that handles customer data and a new CRM bounded context that manages customer interactions, to integrate them create an ACL that translates data between the Legacy System's format and the CRM's format such that the CRM can use customer data without being tightly coupled to the legacy system's internal model
 
+![Anticorruption Layer](photos/anticorruption_layer.png)
+
+**Details**:
+1. Facade: A Facade provides a simplified interface to the Client System, hiding the complexity of the External System
+2. Translator: A translator converts data and messages between systems, for example if the External System uses a term like C3 but the Client System calls it CustomerData, the Translator ensures that they can exchange the correct information
+3. Adapter: An adapter is a design pattern used to convert one interface into another, if the Client System wants to call a method that doesn't exist in the External System, the Adapter can "wrap" the External System's functionality and present it in a way the Client System understands
+
+The Anticorruption Layer can be implemented as a service, thought it may contain more than one service, in which each service has a corresponding Facade, and for each Facade we add an Adapter, object and data conversion is done with a translator
+
 ### Separate Ways
 Separate Ways is a strategic decision to keep bounded contexts entirely isolated from each other, this means there are no dependencies or interactions between these contexts, allowing teams to work independently
 
@@ -149,6 +158,24 @@ Relationships and COntext Map:
 5. Separate Ways
     - Support does not interact with Course Catalog directly
 
+### Distillation
+Distillation is the process of separating the substances composing a mixture, the purpose of distillation is to extract a particular substance from the mixture, during the distillation process, some byproducts may be obtained, and they can also be of interest
+
+A large domain has a large model even after we have refined it and created many abstractions, it can remain big even after many refactorings
+
+In situations liek this, it may be time for a distillation, the idea is to define a Core Domain which represents the essence of the domain, the byproducts of the distillation process will be Generic Subdomains which will comprise the other parts of the system
+
+In designing a large system, there are so many contributing components, all complicated and all absolutely necessary to success, that the essence of the domain model, the real business asset, can be obscured and neglected
+
+When working with a large model, we should try to separate the essential concepts from the general ones, in the beginning we gave the example of an air traffic monitoring syste, we said that a Flight Plan contains the designed Route the plane must follow
+
+The Route seems to be an ever present concept in this system, actually this concept is a generic one, and not an essential one, the Route concept is used in many domains and a generic model can be designed to describe it, the essence of the air traffic monitoring is somewhere else, the monitoring system knows the route of the plane should follow, but it also receives input from a network of radars tracking the plane in the air, and it is usually different from the prescribed one
+
+The system will have to compute the trajectory of the plane based on its current flight parameters, plane characteristics, and weather, the trajectory is a four dimensional path which completely describes the route that the plane will travel in time, the trajectory may be computed for the next couple of kminutes, for the next doznes of minuts or even the next couple of hours
+
+The module which synthesizes the plane trajectory from the available data is the heart of the business system here, this should be marked out as the core domain, the routing model is more of a generic domain
+
+Boil the model down, find the Core Domain and make the Core small, apply your top talent to the Code Domain and recruit accordingly, send the effort in the Core to find a deep model and develop a supple design, justify the investment in any other part by how it supports the distilled core
 
 ### State vs Context
 State refers to the current condition or status of something at a specific time, in software it's the data that represents what the system is doing at this moment
